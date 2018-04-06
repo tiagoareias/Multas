@@ -15,7 +15,7 @@ namespace Multas_tA.Models {
       public virtual DbSet<Multas> Multas { get; set; }
       public virtual DbSet<Condutores> Condutores { get; set; }
       public virtual DbSet<Viaturas> Viaturas { get; set; }
-      public virtual DbSet<Agentes> Agente { get; set; }
+      public virtual DbSet<Agentes> Agentes { get; set; }
 
 
    }
