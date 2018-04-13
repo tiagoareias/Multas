@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -66,22 +67,51 @@ namespace Multas_tA.Controllers {
       // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
       [HttpPost]
       [ValidateAntiForgeryToken]
-      public ActionResult Create([Bind(Include = "Nome,Fotografia,Esquadra")] Agentes agentes) {
+      public ActionResult Create([Bind(Include = "ID,Nome,Esquadra,Fotografia")] Agentes agente,
+                                 HttpPostedFileBase fileUploadFotografia) {
+
+         // determinar o ID do novo Agente
+         int novoID = db.Agentes.Max(a => a.ID) + 1;
+
+         // atribuir o ID ao novo agente
+         agente.ID = novoID;
+
+         // var. auxiliar
+         string nomeFotografia = "Agente_" + novoID + ".jpg";
+         string caminhoParaFotografia = Path.Combine(Server.MapPath("~/imagens/"), nomeFotografia); // indica onde a imagem será guardada
+
+         // verificar se chega efetivamente um ficheiro ao servidor
+         if(fileUploadFotografia != null) {
+            // guardar o nome da imagem na BD
+            agente.Fotografia = nomeFotografia;
+         }
+         else {
+            // não há imagem...
+            ModelState.AddModelError("", "Não foi fornecida uma imagem..."); // gera MSG de erro
+            return View(agente); // reenvia os dados do 'Agente' para a View
+         }
+
+         //    verificar se o ficheiro é realmente uma imagem ---> casa
+         //    redimensionar a imagem --> ver em casa
 
          // ModelState.IsValid --> confronta os dados fornecidos com o modelo
          // se não respeitar as regras do modelo, rejeita os dados
          if(ModelState.IsValid) {
-         // adiciona na estrutura de dados, na memória do servidor,
-         // o objeto Agentes
-            db.Agentes.Add(agentes);
+            // adiciona na estrutura de dados, na memória do servidor,
+            // o objeto Agentes
+            db.Agentes.Add(agente);
             // faz 'commit' na BD
             db.SaveChanges();
+
+            // guardar a imagem no disco rígido
+            fileUploadFotografia.SaveAs(caminhoParaFotografia);
+
             // redireciona o utilizador para a página de início
             return RedirectToAction("Index");
          }
 
          // devolve os dados do agente à View
-         return View(agentes);
+         return View(agente);
       }
 
       // GET: Agentes/Edit/5
@@ -103,7 +133,7 @@ namespace Multas_tA.Controllers {
       [ValidateAntiForgeryToken]
       public ActionResult Edit([Bind(Include = "ID,Nome,Fotografia,Esquadra")] Agentes agentes) {
          if(ModelState.IsValid) {
-         // atualiza os dados do Agente, na estrutura de dados em memória
+            // atualiza os dados do Agente, na estrutura de dados em memória
             db.Entry(agentes).State = EntityState.Modified;
             // Commit
             db.SaveChanges();
@@ -128,7 +158,7 @@ namespace Multas_tA.Controllers {
       [HttpPost, ActionName("Delete")]
       [ValidateAntiForgeryToken]
       public ActionResult DeleteConfirmed(int id) {
-      // procurar o Agente
+         // procurar o Agente
          Agentes agentes = db.Agentes.Find(id);
          // remover da memória
          db.Agentes.Remove(agentes);
