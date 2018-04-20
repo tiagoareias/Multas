@@ -14,7 +14,7 @@ namespace Multas_tA.Models {
 
 
       [Key]
-      [DatabaseGenerated(DatabaseGeneratedOption.None)]
+      [DatabaseGenerated(DatabaseGeneratedOption.None)] // impede que um novo Agente tenha um ID automático
       public int ID { get; set; }
 
       [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")] // o atributo 'Nome' é de preenchimento obrigatório
@@ -23,7 +23,7 @@ namespace Multas_tA.Models {
       [StringLength(40)]
       public string Nome { get; set; }
 
-      [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
+     // [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
       public string Fotografia { get; set; }
 
       [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
