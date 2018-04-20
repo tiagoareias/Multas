@@ -18,7 +18,12 @@ namespace Multas_tA.Models {
       public virtual DbSet<Viaturas> Viaturas { get; set; }
       public virtual DbSet<Agentes> Agentes { get; set; }
 
-      // configura a forma como as tabelas são criadas
+
+
+      /// <summary>
+      /// configura a forma como as tabelas são criadas
+      /// </summary>
+      /// <param name="modelBuilder"> objeto que referencia o gerador de base de dados </param>      
       protected override void OnModelCreating(DbModelBuilder modelBuilder) {
 
          modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
