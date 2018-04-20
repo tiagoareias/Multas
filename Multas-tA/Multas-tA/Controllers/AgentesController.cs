@@ -207,13 +207,31 @@ namespace Multas_tA.Controllers {
       [ValidateAntiForgeryToken]
       public ActionResult DeleteConfirmed(int id) {
          // procurar o Agente
-         Agentes agentes = db.Agentes.Find(id);
-         // remover da memória
-         db.Agentes.Remove(agentes);
-         // commit na BD
-         db.SaveChanges();
-         return RedirectToAction("Index");
+         Agentes agente = db.Agentes.Find(id);
+
+         try {
+            // remover da memória
+            db.Agentes.Remove(agente);
+            // commit na BD
+            db.SaveChanges();
+            // redirecionar para a página inicial
+            return RedirectToAction("Index");
+         }
+         catch(Exception) {
+            // gerar uma mensagem de erro, a ser apresentada ao utilizador
+            ModelState.AddModelError("",
+                       string.Format("Não foi possível remover o Agente '{0}', porque existem {1} multas associadas a ele.",
+                                      agente.Nome , agente.ListaDeMultas.Count));
+         }
+
+         // reenviar os dados para a View
+         return View(agente);
       }
+
+
+
+
+
 
       protected override void Dispose(bool disposing) {
          if(disposing) {
