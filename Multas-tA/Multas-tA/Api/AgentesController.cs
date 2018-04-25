@@ -32,7 +32,7 @@ namespace Multas_tA.Api
             // Para prevenir referências circulares, 
             // estou a fazer uso do operador Select do Linq
             // para construir objectos que não têm as listas
-            // de multas.
+            // de multas (é o campo problemático porque as Multas referenciam Agentes).
             // O Select, quando usado no contexto da Entity Framework (db.Agentes)
             // influencia as colunas que são colocadas no SELECT do SQL gerado
             // (é uma otimização de performance...)
@@ -40,14 +40,14 @@ namespace Multas_tA.Api
             // (cuidado: o Visual Studio, programas, ou até o PC pode crashar por
             // falta de memória, por isso gravem o que estão a fazer!)
             var resultado = db.Agentes
-                .Select(agente => new // new { } permite definir um objeto simples em .net.
+                .Select(agente => new // new { } permite definir um objeto anónimo (sem class) em .net.
                 {
                     agente.ID, // ID = agente.ID,
                     agente.Nome, // Nome = agente.Nome,
                     agente.Esquadra, // Esquadra = agente.Esquadra,
                     agente.Fotografia // Fotografia = agente.Fotografia
                 })
-                .ToList(); // O ToList() executa a query na base de dados.
+                .ToList(); // O ToList() executa a query na base de dados e guarda os resultados numa List<>.
 
             // HTTP 200 OK com o JSON resultante (Array de objetos que representam agentes)
             return Ok(resultado);
@@ -67,6 +67,9 @@ namespace Multas_tA.Api
 
             // Nota: Cuidado que aqui também pode ocorrer o problema das referências
             // circulares! Fica como exercício para casa...
+            // Não precisam do Select aqui (Linq é só para listas),
+            // por isso seria algo como
+            // var resultado = new { ??? };
 
             return Ok(agentes);
         }
@@ -130,11 +133,14 @@ namespace Multas_tA.Api
         #region CRUD: Update de agentes
 
         // CRUD: Atualizar (PUT) um agente, através do seu ID.
+        // O uso do [FromBody] e [FromUri] é para "desambiguar" e ajudar a Web API
+        // a distinguir de onde é que devem vir os valores dos campos.
+        // --
         // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
         // - Se o agente não existe -> 404 (Not Found)
         // PUT: api/Agentes/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAgentes(int id, Agentes agentes)
+        public IHttpActionResult PutAgentes([FromUri] int id, [FromBody] Agentes agentes)
         {
             if (!ModelState.IsValid)
             {
