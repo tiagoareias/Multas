@@ -99,6 +99,9 @@ namespace Multas_tA.Api
                 return BadRequest(ModelState);
             }
 
+            // Definir o ID do agente.
+            agentes.ID = db.GetIdAgente();
+
             db.Agentes.Add(agentes);
 
             try
