@@ -14,6 +14,8 @@ namespace Multas_tA.Migrations
             int maxIdAgente = 0;
 
             // Obter o último ID dos agentes, caso já existam agentes na BD...
+            // Aqui é seguro fazer isto, a não ser que a BD esteja a ser usada
+            // por outra aplicação.
             using (var db = new MultasDb())
             {
                 maxIdAgente = db.Agentes.Max(x => x.ID) + 1;
@@ -22,12 +24,14 @@ namespace Multas_tA.Migrations
             // Sequências são uma forma atómica de obter números a partir de uma BD.
             // https://docs.microsoft.com/en-us/sql/t-sql/statements/create-sequence-transact-sql?view=sql-server-2017
 
-            // ATENÇÃO: Só estou a fazer concatenação porque T-SQL não suporta parameters
-            // com comandos DDL! NUNCA se deve fazer concatenação de strings com variáveis
-            // quando se quer fazer uma query SQL, especialmente se os valores são user-provided!!
+            // ATENÇÃO: Só estou a fazer concatenação porque T-SQL (SQL do SQL Server) 
+            // não suporta parameters com comandos DDL!
+            // NUNCA se deve fazer concatenação de strings com variáveis
+            // quando se quer fazer uma query SQL, especialmente se os valores são user-provided!!!!
             Sql(@"Create Sequence [dbo].[SeqIdAgente] As Int Start With " + maxIdAgente + ";");
         }
         
+        // Se se fizer rollback a esta migração, apagar a sequência criada no upgrade (Up)
         public override void Down()
         {
             Sql("Drop Sequence [dbo].[SeqIdAgente]");

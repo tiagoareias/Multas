@@ -12,25 +12,44 @@ using Multas_tA.Models;
 
 namespace Multas_tA.Api
 {
+    // Controller API dos agentes.
+    // Para informação sobre routing, ver o App_Start/WebApiConfig.cs
     public class AgentesController : ApiController
     {
+        #region Base de dados
+
         // Referência para a base de dados.
         private MultasDb db = new MultasDb();
 
+        #endregion
+
+        #region CRUD: "Read" de agentes
+        
         // CRUD: Obter uma lista de Agentes
         // GET: api/Agentes
         public IHttpActionResult GetAgentes()
         {
+            // Para prevenir referências circulares, 
+            // estou a fazer uso do operador Select do Linq
+            // para construir objectos que não têm as listas
+            // de multas.
+            // O Select, quando usado no contexto da Entity Framework (db.Agentes)
+            // influencia as colunas que são colocadas no SELECT do SQL gerado
+            // (é uma otimização de performance...)
+            // Experimentem comentar o Select() e ver o que acontece
+            // (cuidado: o Visual Studio, programas, ou até o PC pode crashar por
+            // falta de memória, por isso gravem o que estão a fazer!)
             var resultado = db.Agentes
-                .Select(agente => new
+                .Select(agente => new // new { } permite definir um objeto simples em .net.
                 {
-                    agente.ID,
-                    agente.Nome,
-                    agente.Esquadra,
-                    agente.Fotografia
+                    agente.ID, // ID = agente.ID,
+                    agente.Nome, // Nome = agente.Nome,
+                    agente.Esquadra, // Esquadra = agente.Esquadra,
+                    agente.Fotografia // Fotografia = agente.Fotografia
                 })
-                .ToList();
-            
+                .ToList(); // O ToList() executa a query na base de dados.
+
+            // HTTP 200 OK com o JSON resultante (Array de objetos que representam agentes)
             return Ok(resultado);
         }
 
@@ -46,8 +65,69 @@ namespace Multas_tA.Api
                 return NotFound();
             }
 
+            // Nota: Cuidado que aqui também pode ocorrer o problema das referências
+            // circulares! Fica como exercício para casa...
+
             return Ok(agentes);
         }
+
+        #endregion
+        
+        #region CRUD: Criação de agentes
+        
+        // CRUD: Criar um agente.
+        // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
+        // - Se estiver tudo OK -> 201 (Created) com o objeto do Agente.
+        // POST: api/Agentes
+        [ResponseType(typeof(Agentes))]
+        public IHttpActionResult PostAgentes(Agentes agentes)
+        {
+            if (!ModelState.IsValid)
+            {
+                // O BadRequest permite usar o ModelState
+                // para informar o cliente dos erros de validação
+                // tal como no MVC.
+                return BadRequest(ModelState);
+            }
+
+            // Definir o ID do agente (F12 sobre "GetAgente()")
+            // Isto é garantido que funcione, seja para uma operação, seja para múltiplas
+            // em simultâneo (ex: muitas pessoas a aceder ao site/API), ao contrário
+            // do método db.Agentes.Max(agente => agente.ID) + 1, que NÃO É ATÓMICO,
+            // e abre a possibilidade de crashes ou erros de consistência 
+            // (tema de Sistemas Distribuidos)
+            // Ver a migração Migrations/201804251626256_SequenciaIdAgentes.cs
+            agentes.ID = db.GetIdAgente();
+    
+            db.Agentes.Add(agentes);
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                // Seria muito provável que o método
+                // db.Agentes.Max(agente => agente.ID) + 1
+                // fizesse com que este if resultasse no Conflict (HTTP 409).
+                if (AgentesExists(agentes.ID))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            // Num create, é boa prática devolver uma representação 
+            // do resultado da criação do objeto na base de dados.
+            return CreatedAtRoute("DefaultApi", new { id = agentes.ID }, agentes);
+        }
+
+        #endregion
+
+        #region CRUD: Update de agentes
 
         // CRUD: Atualizar (PUT) um agente, através do seu ID.
         // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
@@ -87,41 +167,9 @@ namespace Multas_tA.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // CRUD: Criar um agente.
-        // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
-        // - Se estiver tudo OK -> 201 (Created) com o objeto do Agente.
-        // POST: api/Agentes
-        [ResponseType(typeof(Agentes))]
-        public IHttpActionResult PostAgentes(Agentes agentes)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        #endregion
 
-            // Definir o ID do agente.
-            agentes.ID = db.GetIdAgente();
-
-            db.Agentes.Add(agentes);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (AgentesExists(agentes.ID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtRoute("DefaultApi", new { id = agentes.ID }, agentes);
-        }
+        #region CRUD: Apagar um agente
 
         // CRUD: Apagar um agente
         // - Se o agente não existe -> 404 (Not Found)
@@ -141,6 +189,15 @@ namespace Multas_tA.Api
             return Ok(agentes);
         }
 
+        #endregion
+
+        #region Métodos utilitários e Dispose
+
+        // Fecha a ligação à base de dados.
+        // Este método é chamado pela framework ASP.NET automáticamente,
+        // por isso não precisam de o fazer.
+        // Nota: quando se criam objetos que usam coisas como BDs, sockets,
+        // ou ficheiros, em .net, implementa-se a interface IDisposable.
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -150,9 +207,12 @@ namespace Multas_tA.Api
             base.Dispose(disposing);
         }
 
+        // Função criada pelo template que verifica se já
+        // existe um agente com um determinado ID.
         private bool AgentesExists(int id)
         {
             return db.Agentes.Count(e => e.ID == id) > 0;
-        }
+        } 
+        #endregion
     }
 }

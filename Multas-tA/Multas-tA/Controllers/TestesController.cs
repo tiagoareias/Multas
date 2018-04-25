@@ -8,8 +8,8 @@ namespace Multas_tA.Controllers
 {
     public class TestesController : Controller
     {
-        // GET: Testes
-        public ActionResult Index()
+        // GET: Testes/Agentes
+        public ActionResult Agentes()
         {
             return View();
         }

@@ -27,9 +27,17 @@ namespace Multas_tA.Models
         /// <returns>O próximo ID do agente.</returns>
         public int GetIdAgente()
         {
-            return Database
+            // Um objeto que derive da classe "DbContext" (como o MultasDb)
+            // permite que seja executado SQL "raw", como no exemplo abaixo.
+            return this.Database
+                // <int> define o tipo de dados. Pode ser uma classe, os valores dos campos
+                // do SELECT serão copiados para o objeto.
                 .SqlQuery<int>("Select Next Value For [dbo].[SeqIdAgente]")
-                .Single();
+                // Single() é um operador do Linq. 
+                // Uso este porque só me interessa a primeira (e única) linha.
+                // Usaria ToList() se existissem várias, e First()/Last() se só quisesse
+                // a primera/última linha de muitas.
+                .Single(); 
         }
 
         /// <summary>
