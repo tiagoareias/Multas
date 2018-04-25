@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -30,9 +31,10 @@ namespace Multas_tA.Models {
       [RegularExpression("[A-Za-záéíóúãõàèìòùâêîôûäëïöüç 0-9-]+", ErrorMessage = "Escreva um nome aceitável...")]
       public string Esquadra { get; set; }
 
-      // complementar a informação sobre o relacionamento
-      // de um Agente com as Multas por ele 'passadas'
-      public virtual ICollection<Multas> ListaDeMultas { get; set; }
+        // complementar a informação sobre o relacionamento
+        // de um Agente com as Multas por ele 'passadas'
+        //[JsonIgnore]
+        public virtual ICollection<Multas> ListaDeMultas { get; set; }
 
    }
 }

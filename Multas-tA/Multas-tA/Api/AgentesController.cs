@@ -14,14 +14,28 @@ namespace Multas_tA.Api
 {
     public class AgentesController : ApiController
     {
+        // Referência para a base de dados.
         private MultasDb db = new MultasDb();
 
+        // CRUD: Obter uma lista de Agentes
         // GET: api/Agentes
-        public IQueryable<Agentes> GetAgentes()
+        public IHttpActionResult GetAgentes()
         {
-            return db.Agentes;
+            var resultado = db.Agentes
+                .Select(agente => new
+                {
+                    agente.ID,
+                    agente.Nome,
+                    agente.Esquadra,
+                    agente.Fotografia
+                })
+                .ToList();
+            
+            return Ok(resultado);
         }
 
+        // CRUD: Obter um agente, através do seu ID.
+        // - Se o agente não existe -> 404 (Not Found)
         // GET: api/Agentes/5
         [ResponseType(typeof(Agentes))]
         public IHttpActionResult GetAgentes(int id)
@@ -35,6 +49,9 @@ namespace Multas_tA.Api
             return Ok(agentes);
         }
 
+        // CRUD: Atualizar (PUT) um agente, através do seu ID.
+        // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
+        // - Se o agente não existe -> 404 (Not Found)
         // PUT: api/Agentes/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutAgentes(int id, Agentes agentes)
@@ -70,6 +87,9 @@ namespace Multas_tA.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        // CRUD: Criar um agente.
+        // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
+        // - Se estiver tudo OK -> 201 (Created) com o objeto do Agente.
         // POST: api/Agentes
         [ResponseType(typeof(Agentes))]
         public IHttpActionResult PostAgentes(Agentes agentes)
@@ -100,6 +120,8 @@ namespace Multas_tA.Api
             return CreatedAtRoute("DefaultApi", new { id = agentes.ID }, agentes);
         }
 
+        // CRUD: Apagar um agente
+        // - Se o agente não existe -> 404 (Not Found)
         // DELETE: api/Agentes/5
         [ResponseType(typeof(Agentes))]
         public IHttpActionResult DeleteAgentes(int id)
