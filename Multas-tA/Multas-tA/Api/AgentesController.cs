@@ -15,6 +15,7 @@ namespace Multas_tA.Api
 {
     // Controller API dos agentes.
     // Para informação sobre routing, ver o App_Start/WebApiConfig.cs
+    [RoutePrefix("api/agentes")]
     public class AgentesController : ApiController
     {
         #region Base de dados
@@ -74,11 +75,19 @@ namespace Multas_tA.Api
 
             return Ok(agentes);
         }
-        
-        // Nota: Isto não funciona se não for definido um route para este método
-        // no WebApiConfig.cs.
+
+        // Uso de Attribute Routing.
+        // Attribute Routing é muito mais poderoso
+        // e flexível do que o default da Web API, que só
+        // permite operações GET/PUT/POST/DELETE no objeto "raíz".
+        // Ver WebApiConfig.cs.
+        [HttpGet, Route("{id}/multas")]
         public IHttpActionResult GetMultasByAgente(int id)
         {
+            // Este método "restaura" o link removido no "GetAgentes"
+            // para podermos ter uma lista de multas de um agente
+            // a partir da API.
+
             var agente = db.Agentes.Find(id);
 
             if (agente == null)

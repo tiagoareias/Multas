@@ -37,7 +37,21 @@ namespace Multas_tA
 
             // Configuração do Attribute Routing para Web API.
             // isto não fará nada se não tivermos [Route] nos nossos métodos.
-            // Será explicado no futuro...
+            // Isto permite que usemos [Route], combinado de 
+            // [HttpGet], [HttpPost], [HttpPut], [HttpDelete], [HttpPatch]
+            // para definir um route para uma função num controller.
+
+            // Uso:
+            // - [RoutePrefix] é usado num controller para definir a "raíz"
+            // dos seus métodos (ex: [RoutePrefix("api/agentes")]).
+            // - [Route] é usado para definir o caminho para uma função.
+            // isto é combinado com o [RoutePrefix], e é "concatenado":
+            // [Route("{id}/multas")] -> no controller com o [RoutePrefix] acima
+            // responde a "api/agentes/5/multas".
+            // - [HttpGet] e etc. podem ser combinados (podemos ter múltiplos, mas não recomendo)
+            // para indicar a que métodos HTTP a função responde (GET, PUT, POST, DELETE).
+
+            // Attribute routing toma prioriade sobre conventions-based routing (abaixo).
             config.MapHttpAttributeRoutes();
 
             // O equivalente do "MapRoute" do MVC (ver RouteConfig.cs nesta pasta).
@@ -58,11 +72,11 @@ namespace Multas_tA
             // Configuração de uma rota para as multas de um Agente.
             // Nota: Isto é um workaround para as limitações do MapHttpRoute.
             // Attribute Routing é muito melhor...
-            config.Routes.MapHttpRoute(
-                name: "MultasDeUmAgente",
-                routeTemplate: "api/agentes/{id}/multas",
-                defaults: new { controller = "Agentes", action= "GetMultasByAgente" }
-            );
+            //config.Routes.MapHttpRoute(
+            //    name: "MultasDeUmAgente",
+            //    routeTemplate: "api/agentes/{id}/multas",
+            //    defaults: new { controller = "Agentes", action= "GetMultasByAgente" }
+            //);
 
             #endregion
 
