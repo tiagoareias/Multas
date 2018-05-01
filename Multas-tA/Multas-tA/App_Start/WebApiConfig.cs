@@ -15,8 +15,10 @@ namespace Multas_tA
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
             // Impedir referências circulares no JSON.
-            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = 
-                Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            // Nota: isto é uma má ideia, porque esconde erros no nosso código.
+            // É preferível usar a anotação [JsonIgnore] no campo que se quer ignorar.
+            //config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = 
+            //    Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 
             // Pretty-print do JSON
             config.Formatters.JsonFormatter.SerializerSettings.Formatting = 
