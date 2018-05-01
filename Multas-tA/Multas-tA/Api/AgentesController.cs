@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Multas_tA.ApiViewModels;
 using Multas_tA.Models;
 
 namespace Multas_tA.Api
@@ -75,15 +76,18 @@ namespace Multas_tA.Api
         }
 
         #endregion
-        
+
         #region CRUD: Criação de agentes
-        
+
         // CRUD: Criar um agente.
         // - Se o agente não é válido (validações do MVC) -> 400 (Bad Request)
         // - Se estiver tudo OK -> 201 (Created) com o objeto do Agente.
+        // Nota: Este método faz uso de view models
+        // por questões de validações e segurança.
+        // Ver classe 'ApiViewModels/CreateAgenteViewModel' para mais detalhes.
         // POST: api/Agentes
         [ResponseType(typeof(Agentes))]
-        public IHttpActionResult PostAgentes(Agentes agentes)
+        public IHttpActionResult PostAgentes(CreateAgenteViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -93,6 +97,7 @@ namespace Multas_tA.Api
                 return BadRequest(ModelState);
             }
 
+            // Copiar os campos do 'model' para um novo objeto de 'Agentes'.
             // Definir o ID do agente (F12 sobre "GetAgente()")
             // Isto é garantido que funcione, seja para uma operação, seja para múltiplas
             // em simultâneo (ex: muitas pessoas a aceder ao site/API), ao contrário
@@ -100,8 +105,13 @@ namespace Multas_tA.Api
             // e abre a possibilidade de crashes ou erros de consistência 
             // (tema de Sistemas Distribuidos)
             // Ver a migração Migrations/201804251626256_SequenciaIdAgentes.cs
-            agentes.ID = db.GetIdAgente();
-    
+            var agentes = new Agentes
+            {
+                ID = db.GetIdAgente(),
+                Nome = model.Nome,
+                Esquadra = model.Esquadra
+            };
+
             db.Agentes.Add(agentes);
 
             try
