@@ -75,6 +75,8 @@ namespace Multas_tA.Api
             return Ok(agentes);
         }
         
+        // Nota: Isto não funciona se não for definido um route para este método
+        // no WebApiConfig.cs.
         public IHttpActionResult GetMultasByAgente(int id)
         {
             var agente = db.Agentes.Find(id);

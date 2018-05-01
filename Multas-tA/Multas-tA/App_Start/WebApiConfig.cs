@@ -55,6 +55,15 @@ namespace Multas_tA
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            // Configuração de uma rota para as multas de um Agente.
+            // Nota: Isto é um workaround para as limitações do MapHttpRoute.
+            // Attribute Routing é muito melhor...
+            config.Routes.MapHttpRoute(
+                name: "MultasDeUmAgente",
+                routeTemplate: "api/agentes/{id}/multas",
+                defaults: new { controller = "Agentes", action= "GetMultasByAgente" }
+            );
+
             #endregion
 
 
