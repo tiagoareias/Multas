@@ -74,6 +74,47 @@ namespace Multas_tA.Api
 
             return Ok(agentes);
         }
+        
+        public IHttpActionResult GetMultasByAgente(int id)
+        {
+            var agente = db.Agentes.Find(id);
+
+            if (agente == null)
+            {
+                return NotFound();
+            }
+
+            var resultado = agente.ListaDeMultas
+                .Select(multa => new
+                {
+                    multa.DataDaMulta,
+                    multa.ID,
+                    multa.Infracao,
+                    multa.LocalDaMulta,
+                    multa.ValorMulta,
+                    
+                    Agente = new
+                    {
+                        agente.ID,
+                        agente.Nome
+                    },
+                    Condutor = new
+                    {
+                        multa.Condutor.ID,
+                        multa.Condutor.Nome
+                    },
+                    Viatura = new
+                    {
+                        multa.Viatura.ID,
+                        multa.Viatura.Matricula,
+                        multa.Viatura.Marca,
+                        multa.Viatura.Modelo
+                    }
+                })
+                .ToList();
+
+            return Ok(resultado);
+        }
 
         #endregion
 
