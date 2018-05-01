@@ -36,5 +36,17 @@
 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+
+    @* 
+        Secções em Razor permitem que Views coloquem conteúdos (HTML, etc.)
+        Em partes específicas do layout.
+
+        Nota: se não usar 'required: false', views que não usam
+
+        @section scripts {}
+
+        Vão deixar de funcionar.
+    *@
+    @RenderSection("scripts", required: false)
 </body>
 </html>
