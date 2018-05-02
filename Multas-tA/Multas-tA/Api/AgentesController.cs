@@ -95,6 +95,10 @@ namespace Multas_tA.Api
                 return NotFound();
             }
 
+            // Efectivamente, estou a usar um "View Model"
+            // (excepto que não tem classe) para fins de projecção
+            // (modificação) dos dados, para prevenir referências circulares.
+            // Podia (e devia), claro, criar uma classe que representasse este View Model.
             var resultado = agente.ListaDeMultas
                 .Select(multa => new
                 {
