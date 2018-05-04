@@ -1,6 +1,6 @@
 ﻿using Owin;
 
-namespace IdentitySample
+namespace Multas_tA
 {
     public partial class Startup
     {

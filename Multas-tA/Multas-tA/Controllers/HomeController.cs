@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace IdentitySample.Controllers
+namespace Multas_tA.Controllers
 {
     public class HomeController : Controller
     {

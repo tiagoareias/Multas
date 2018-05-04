@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace IdentitySample
+namespace Multas_tA
 {
     public class BundleConfig
     {
