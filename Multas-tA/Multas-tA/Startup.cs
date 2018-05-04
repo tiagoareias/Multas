@@ -48,8 +48,8 @@ namespace Multas_tA {
 
          // criar um utilizador 'Agente'
          var user = new ApplicationUser();
-         user.UserName = "agente@mail.pt";
-         user.Email = "agente@mail.pt";
+         user.UserName = "tania@mail.pt";
+         user.Email = "tania@mail.pt";
          //  user.Nome = "Luís Freitas";
          string userPWD = "123_Asd";
          var chkUser = userManager.Create(user, userPWD);

@@ -15,6 +15,7 @@ namespace Multas_tA.Models {
       public int ID { get; set; } // Chave primária
 
       // dados próprios do condutor
+      [Display(Name = "Nome do Condutor")]
       public string Nome { get; set; }
 
       public string BI { get; set; }
