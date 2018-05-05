@@ -12,7 +12,8 @@ using Multas_tA.Models;
 namespace Multas_tA.Controllers {
    public class AgentesController : Controller {
 
-      // cria um objeto privado, que representa a base de dados
+      
+        // cria um objeto privado, que representa a base de dados
       private ApplicationDbContext db = new ApplicationDbContext();
 
       // GET: Agentes
