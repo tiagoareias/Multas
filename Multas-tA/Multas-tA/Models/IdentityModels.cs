@@ -1,17 +1,26 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Multas_tA.Models {
-   // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
+    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
 
-   /// <summary>
-   /// classe responsável por gerar 'UTILIZADORES'
-   /// </summary>
-   public class ApplicationUser : IdentityUser {
+    /// <summary>
+    /// classe responsável por gerar 'UTILIZADORES'
+    /// </summary>
+    public class ApplicationUser : IdentityUser {
+        //criar tributos que serao explicitos na minha aplicação
+        //vao ser criados na tabela aspnetusers
+        public string NomeProprio { get; set; }
+
+        public string Apelido { get; set; }
+
+        public  DateTime? DataNascimento {get;set;}
+
       public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager) {
          // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
          var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
