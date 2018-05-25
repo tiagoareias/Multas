@@ -152,14 +152,36 @@ namespace Multas_tA.Controllers
                 var user = new ApplicationUser {
                     UserName = model.Email,
                     Email = model.Email,
-                    NomeProprio=model.NomeProprio,
-                    Apelido=model.Apelido,
-                    DataNascimento=model.DataNascimento
+                    
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
-                {
+                    {
+                    try
+                    {
+                            //registar os dados especificos deo utilizador
+
+                            Utilizador utilizador = new Utilizador();
+                            utilizador = model.Utilizador;
+                        utilizador.UserName = user.UserName;
+                            ApplicationDbContext db = new ApplicationDbContext();
+                            db.Utilizadores.Add(utilizador);
+                            db.SaveChanges();
+                        }
+                    catch (Exception ex)
+                    {
+                        //gerar messagem para o ModelError
+                        //registar na base de dad0s que ocorreu um erro
+                        ///     -data
+                        ///     -hora
+                        ///     -nome do controller
+                        ///     nome do metodo
+                        ///     texto com a descricao do erro(ex.message)
+                        ///     outras informacoes que se considerem necessarias
+                        ///    enviar email para o administrador do sistema
+                    }
                     var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    //mensagem quando se cria uma conta, é enviado um mail
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     ViewBag.Link = callbackUrl;

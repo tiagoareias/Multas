@@ -13,14 +13,7 @@ namespace Multas_tA.Models {
     /// classe responsável por gerar 'UTILIZADORES'
     /// </summary>
     public class ApplicationUser : IdentityUser {
-        //criar tributos que serao explicitos na minha aplicação
-        //vao ser criados na tabela aspnetusers
-        public string NomeProprio { get; set; }
-
-        public string Apelido { get; set; }
-
-        public  DateTime? DataNascimento {get;set;}
-
+  
       public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager) {
          // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
          var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
@@ -57,11 +50,13 @@ namespace Multas_tA.Models {
       public virtual DbSet<Viaturas> Viaturas { get; set; }
       public virtual DbSet<Agentes> Agentes { get; set; }
 
-      /// <summary>
-      /// configura a forma como as tabelas são criadas
-      /// </summary>
-      /// <param name="modelBuilder"> objeto que referencia o gerador de base de dados </param>      
-      protected override void OnModelCreating(DbModelBuilder modelBuilder) {
+        //tabela para registar os dados dos utilizadores
+        public virtual DbSet<Utilizador> Utilizadores { get; set; }
+        /// <summary>
+        /// configura a forma como as tabelas são criadas
+        /// </summary>
+        /// <param name="modelBuilder"> objeto que referencia o gerador de base de dados </param>      
+        protected override void OnModelCreating(DbModelBuilder modelBuilder) {
 
          modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
          modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
