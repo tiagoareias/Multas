@@ -11,12 +11,16 @@ using Microsoft.AspNet.Identity;
 using Multas_tA.Models;
 
 namespace Multas_tA.Controllers {
-   public class AgentesController : Controller {
+
+    //[Authorize] // garante que só quem estiver autenticado tem acesso aos serviços deste controller
+    [Authorize(Roles = "Agentes")]//só os utilizadores do tipo 'agentes' é que tem acesso
+    public class AgentesController : Controller {
 
       
         // cria um objeto privado, que representa a base de dados
       private ApplicationDbContext db = new ApplicationDbContext();
-
+    
+    [AllowAnonymous] // permite que quem bão estiver autenticado veja este recurso
       // GET: Agentes
       public ActionResult Index() {
 

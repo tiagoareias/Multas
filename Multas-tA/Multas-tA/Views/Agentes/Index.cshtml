@@ -5,11 +5,14 @@
 }
 
 <h2>Listagem de Agentes</h2>
-
+<!--está autenticado
+    if(User.Identity.IsAuthenticated == true)-->
+@if (User.IsInRole("Agentes"))
+{
 <p>
     @Html.ActionLink("Adicionar novo Agente", "Create")
 </p>
-
+}
 <table class="table">
     <tr>
         <th>
@@ -39,9 +42,13 @@
            </a>
         </td>
         <td>
-            @Html.ActionLink("Editar", "Edit", new { id=agente.ID }) |
-            @Html.ActionLink("Detalhes", "Details", new { id=agente.ID }) |
-            @Html.ActionLink("Apagar", "Delete", new { id=agente.ID })
+            @if (User.IsInRole("Agentes")) { 
+            <div>
+                @Html.ActionLink("Editar", "Edit", new { id = agente.ID }) |
+                @Html.ActionLink("Detalhes", "Details", new { id = agente.ID }) |
+                @Html.ActionLink("Apagar", "Delete", new { id = agente.ID })
+            </div>
+            }
         </td>
     </tr>
 }
